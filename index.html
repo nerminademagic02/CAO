@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Jedan mali test</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top, #3b2468 0%, #171326 45%, #0b0910 100%);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 520px;
+    }
+
+    .screen {
+      display: none;
+      animation: fadeIn 0.35s ease;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(18px);
+      border-radius: 28px;
+      padding: 32px 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    .emoji {
+      font-size: 48px;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      font-size: 32px;
+      line-height: 1.15;
+      margin-bottom: 14px;
+    }
+
+    h2 {
+      font-size: 25px;
+      line-height: 1.3;
+      margin-bottom: 25px;
+    }
+
+    p {
+      color: rgba(255, 255, 255, 0.75);
+      line-height: 1.6;
+      margin-bottom: 25px;
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      border-radius: 16px;
+      padding: 16px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .primary {
+      background: white;
+      color: #19131f;
+    }
+
+    .primary:hover {
+      transform: translateY(-2px);
+    }
+
+    .option {
+      background: rgba(255, 255, 255, 0.08);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      margin-bottom: 12px;
+      text-align: left;
+      font-weight: normal;
+    }
+
+    .option.selected {
+      background: rgba(255, 255, 255, 0.22);
+      border-color: white;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 140px;
+      resize: vertical;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(0, 0, 0, 0.2);
+      color: white;
+      padding: 16px;
+      font-size: 16px;
+      outline: none;
+      margin-bottom: 15px;
+    }
+
+    textarea::placeholder {
+      color: rgba(255, 255, 255, 0.45);
+    }
+
+    .progress-area {
+      margin-bottom: 25px;
+    }
+
+    .progress-text {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.55);
+      margin-bottom: 8px;
+    }
+
+    .progress {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: white;
+      transition: width 0.3s ease;
+    }
+
+    .error {
+      color: #ff9f9f;
+      font-size: 14px;
+      margin-top: 10px;
+      display: none;
+    }
+
+    .success-icon {
+      font-size: 60px;
+      margin-bottom: 20px;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- INTRO -->
+    <section id="intro" class="screen active">
+      <div class="card">
+        <div class="emoji">💭</div>
+
+        <h1>NEŠTO NOVO JE STIGLO ❤️</h1>
+
+        <p>
+          Napravio sam ti nešto malo drugačije :)
+          Nema tačnih i netačnih odgovora.
+          Samo želim da vidim šta ćeš ti reći. ;)
+          Pa da počnemo. ❤️
+        </p>
+
+        <button class="primary" onclick="startQuiz()">
+          KRENI
+        </button>
+      </div>
+    </section>
+
+
+    <!-- QUIZ -->
+    <section id="quiz" class="screen">
+
+      <div class="progress-area">
+        <div class="progress-text">
+          <span id="questionNumber">1 / 15</span>
+          <span id="progressPercent">0%</span>
+        </div>
+
+        <div class="progress">
+          <div id="progressBar" class="progress-bar"></div>
+        </div>
+      </div>
+
+      <div class="card">
+
+        <h2 id="questionText"></h2>
+
+        <div id="answerArea"></div>
+
+        <div id="errorMessage" class="error">
+          Odgovori prvo, pa nastavljamo. ❤️
+        </div>
+
+        <button
+          id="nextButton"
+          class="primary"
+          onclick="nextQuestion()"
+        >
+          Stisni me već jednom
+        </button>
+
+      </div>
+    </section>
+
+
+    <!-- END -->
+    <section id="end" class="screen">
+      <div class="card">
+
+        <div class="success-icon">❤️</div>
+
+        <h1>Hvala ti.</h1>
+
+        <p>
+          Tvoji odgovori su stigli do mene.
+        </p>
+
+        <p>
+          Nema rezultata ovog puta.
+          Neke stvari jednostavno nijesu za bodovanje.
+        </p>
+
+      </div>
+    </section>
+
+  </div>
+
+
+  <!-- SUPABASE -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+
+    /*
+      OVDJE ĆEŠ UBACITI SVOJE SUPABASE PODATKE.
+      NE MIJENJAJ NIŠTA DRUGO.
+    */
+
+    const SUPABASE_URL = "https://lnbnskaildyagjvhgciz.supabase.co/rest/v1/";
+
+    const SUPABASE_KEY = "sb_publishable_iQMpLwytSRq99xkwgAaQeg_F7a7a04x";
+
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+
+
+    const questions = [
+
+      {
+        question: "Koja od ovih stvari NAS najviše opisuje?",
+        type: "choice",
+        options: [
+          "Posesivnost",
+          "Ambicija",
+          "Radoznalost",
+          "Sve pomalo"
+        ]
+      },
+
+      {
+        question: "Šta misliš, koju stvar najviše volim kod tebe? (Budi detaljna)",
+        type: "text"
+      },
+
+      {
+        question: "Šta misliš da mi je najvažnije u vezi?",
+        type: "choice",
+        options: [
+          "TI",
+          "SAMO TI",
+          "JEDINO I SAMO TI",
+          "JEDINO, ISKLJUCIVO I SAMO TI"
+        ]
+      },
+
+      {
+        question: "Šta misliš da je nešto što ja možda ne govorim dovoljno često, ali mi je zapravo veoma važno?",
+        type: "text"
+      },
+
+      {
+        question: "Eh, sad nešto NOVO, nešto DIVLJE. Šta te najviše uzbudilo u našim dosadašnjim odnosima?",
+        type: "text"
+      },
+
+      {
+        question: "Nezaboravno veče za nas dvoje, atmosfera, emocije, strast. Kako to veče izgleda u tvojim očima?",
+        type: "text"
+      },
+
+      {
+        question: "Šta misliš da je moja najveća slabost kada si ti u pitanju?",
+        type: "text"
+      },
+
+      {
+        question: "Koja je jedna stvar koju ja mogu da uradim, a da bi tebi u našem odnosu značila mnogo više nego što bih ja očekivao? (i u svakodnevnom odnosu, i u seksualnom)",
+        type: "text"
+      },
+
+      {
+        question: "Da postoji jedna destinacija iz snova, gdje bi željela da budemo isključivo nas dvoje sami, koje bi mjesto/lokaciju izabrala?",
+        type: "text"
+      },
+
+      {
+        question: "KRATKA PAUZA. Koje od nas dvoje je bolje u slagalici?",
+        type: "choice",
+        options: [
+          "Ti",
+          "Ti",
+          "Podjednako",
+          "Neću da se izjasnim 😂"
+        ]
+      },
+
+      {
+        question: "E pa stigla si do kraja, sad da vidimo koliko ćeš iskreno odgovoriti na posljednje pitanje. Da li si u prvih mjesec dana naše konverzacije uopšte pomislila da ću ti postati bitan? (Ne prihvataju se odgovori Da/Ne)",
+        type: "text"
+      },
+
+      {
+        question: "Stvarno si mislila da je kraj? Ti si legenda... Eh sad... Napiši nešto vezano za mene što ti leži na duši (pozitivno ili negativno). Ovaj odgovor ne ostaje ubilježen u memoriju.",
+        type: "text"
+      },
+
+      {
+        question: "Šta od ponuđenog bi izabrala kao predigru?",
+        type: "choice",
+        options: [
+          "Masaža, a nakon masaže češkanje koje eskalira u nešto više",
+          "Dodiri u toku filma čiji se intezitet povećava postepeno, i eskaliraju u nešto intezivnije i grublje",
+          "Kombinaciju dvije gore navedene opcije",
+          "Fino je ovo što si napisao, ali iskreno 'Nermine', možeš ti to mnogo bolje!"
+      },
+
+      {
+        question: "E sad mi reci šta je to što ti je proško kroz glavu kad si pročitala onaj posljednji odgovor. :) ",
+        type: "text"
+      },
+
+      {
+        question: "I za kraj... šta bi željela da ja znam o tebi, o meni ili o nama, a da me nikad nijesi direktno pitala/rekla, a da želiš da čujem?",
+        type: "text"
+      }
+
+    ];
+
+
+    let currentQuestion = 0;
+    let answers = [];
+
+
+    function showScreen(id) {
+
+      document.querySelectorAll(".screen").forEach(screen => {
+        screen.classList.remove("active");
+      });
+
+      document.getElementById(id).classList.add("active");
+    }
+
+
+    function startQuiz() {
+
+      currentQuestion = 0;
+      answers = [];
+
+      showScreen("quiz");
+
+      showQuestion();
+    }
+
+
+    function showQuestion() {
+
+      const question = questions[currentQuestion];
+
+      document.getElementById("questionText").textContent =
+        question.question;
+
+      document.getElementById("questionNumber").textContent =
+        `${currentQuestion + 1} / ${questions.length}`;
+
+      const percent =
+        Math.round(
+          (currentQuestion / questions.length) * 100
+        );
+
+      document.getElementById("progressPercent").textContent =
+        `${percent}%`;
+
+      document.getElementById("progressBar").style.width =
+        `${percent}%`;
+
+      const answerArea =
+        document.getElementById("answerArea");
+
+      answerArea.innerHTML = "";
+
+      document.getElementById("errorMessage").style.display =
+        "none";
+
+
+      if (question.type === "choice") {
+
+        question.options.forEach(option => {
+
+          const button = document.createElement("button");
+
+          button.className = "option";
+
+          button.textContent = option;
+
+          button.onclick = () => {
+
+            document
+              .querySelectorAll(".option")
+              .forEach(btn =>
+                btn.classList.remove("selected")
+              );
+
+            button.classList.add("selected");
+
+            button.dataset.selected = "true";
+          };
+
+          answerArea.appendChild(button);
+
+        });
+
+      }
+
+
+      if (question.type === "text") {
+
+        const textarea =
+          document.createElement("textarea");
+
+        textarea.id = "textAnswer";
+
+        textarea.placeholder =
+          "Napiši šta stvarno misliš...";
+
+        answerArea.appendChild(textarea);
+
+      }
+
+
+      if (currentQuestion === questions.length - 1) {
+
+        document.getElementById("nextButton").textContent =
+          "ZAVRŠI";
+
+      } else {
+
+        document.getElementById("nextButton").textContent =
+          "DALJE";
+
+      }
+
+    }
+
+
+    function getCurrentAnswer() {
+
+      const question = questions[currentQuestion];
+
+      if (question.type === "text") {
+
+        const textarea =
+          document.getElementById("textAnswer");
+
+        return textarea.value.trim();
+
+      }
+
+
+      if (question.type === "choice") {
+
+        const selected =
+          document.querySelector(".option.selected");
+
+        return selected
+          ? selected.textContent
+          : "";
+
+      }
+
+    }
+
+
+    function nextQuestion() {
+
+      const answer = getCurrentAnswer();
+
+      if (!answer) {
+
+        document.getElementById("errorMessage").style.display =
+          "block";
+
+        return;
+
+      }
+
+
+      answers.push({
+        question: questions[currentQuestion].question,
+        answer: answer
+      });
+
+
+      if (currentQuestion < questions.length - 1) {
+
+        currentQuestion++;
+
+        showQuestion();
+
+      } else {
+
+        finishQuiz();
+
+      }
+
+    }
+
+
+    async function finishQuiz() {
+
+      document.getElementById("nextButton").disabled = true;
+
+      const { error } =
+        await supabaseClient
+          .from("quiz_responses")
+          .insert({
+            answers: answers
+          });
+
+
+      if (error) {
+
+        console.error(error);
+
+        alert(
+          "Došlo je do greške pri slanju odgovora. Provjeri internet vezu i pokušaj ponovo."
+        );
+
+        document.getElementById("nextButton").disabled = false;
+
+        return;
+
+      }
+
+
+      showScreen("end");
+
+    }
+
+  </script>
+
+</body>
+</html>
